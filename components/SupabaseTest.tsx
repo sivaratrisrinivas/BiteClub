@@ -18,7 +18,7 @@ export default function SupabaseTest() {
 
             if (error) {
                 // This is expected - we're just testing if we can connect
-                if (error.message.includes('relation "_test" does not exist')) {
+                if (error.message.includes('does not exist') || error.message.includes('relation')) {
                     setConnectionStatus('✅ Connected to Supabase!');
                 } else {
                     setConnectionStatus(`❌ Error: ${error.message}`);

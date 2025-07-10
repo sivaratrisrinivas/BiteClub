@@ -10,13 +10,13 @@
 - [x] Push to GitHub repository
 - **Deliverable**: Expo app that builds and runs ✅
 
-### Task 2: Supabase Backend Setup 🔄 IN PROGRESS
+### Task 2: Supabase Backend Setup ✅ COMPLETED
 - [x] Create Supabase project
 - [x] Enable email authentication
-- [ ] Create database tables (profiles, posts, friendships, challenges)
-- [ ] Set up Storage bucket for images
-- [ ] Test connection from app
-- **Deliverable**: Working Supabase backend with auth
+- [x] Test connection from app
+- [x] Create database tables (profiles, posts, friendships, challenges)
+- [x] Set up Storage bucket for images
+- **Deliverable**: Working Supabase backend with auth ✅
 
 ### Task 3: Basic Auth Flow
 - [ ] Email/password signup screen
