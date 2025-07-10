@@ -2,16 +2,17 @@
 
 ## Foundation (Week 1, Days 1-2)
 
-### Task 1: Project Setup
+### Task 1: Project Setup ✅ COMPLETED
 - [x] Create Expo project with TypeScript
 - [x] Set up Git repository
-- [ ] Install dependencies: expo-camera, expo-image-picker, @supabase/supabase-js
-- [ ] Configure app.json with camera permissions
-- **Deliverable**: Expo app that builds and runs
+- [x] Install dependencies: expo-camera, expo-image-picker, @supabase/supabase-js
+- [x] Configure app.json with camera permissions
+- [x] Push to GitHub repository
+- **Deliverable**: Expo app that builds and runs ✅
 
-### Task 2: Supabase Backend Setup  
-- [ ] Create Supabase project
-- [ ] Enable email authentication
+### Task 2: Supabase Backend Setup 🔄 IN PROGRESS
+- [x] Create Supabase project
+- [x] Enable email authentication
 - [ ] Create database tables (profiles, posts, friendships, challenges)
 - [ ] Set up Storage bucket for images
 - [ ] Test connection from app
