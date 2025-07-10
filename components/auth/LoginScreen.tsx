@@ -135,7 +135,7 @@ export default function LoginScreen({ onSignupPress, onLoginSuccess }: LoginScre
                 <View style={styles.signupPrompt}>
                     <Text style={styles.signupPromptText}>Don't have an account? </Text>
                     <TouchableOpacity onPress={onSignupPress} disabled={loading}>
-                        <Text style={styles.signupLink}>Sign Up</Text>
+                        <Text style={styles.signupLink}>Switch to Sign Up</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -146,7 +146,7 @@ export default function LoginScreen({ onSignupPress, onLoginSuccess }: LoginScre
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'transparent',
         justifyContent: 'center',
         padding: 20,
     },

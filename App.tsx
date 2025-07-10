@@ -1,25 +1,14 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import SignupScreen from './components/auth/SignupScreen';
-import LoginScreen from './components/auth/LoginScreen';
+import AuthContainer from './components/auth/AuthContainer';
 import VerificationScreen from './components/auth/VerificationScreen';
 
-type AppScreen = 'signup' | 'login' | 'verification';
+type AppScreen = 'auth' | 'verification';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>('signup');
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('auth');
   const [userEmail, setUserEmail] = useState<string>('');
-
-  const handleLoginPress = () => {
-    console.log('Navigating to login screen');
-    setCurrentScreen('login');
-  };
-
-  const handleSignupPress = () => {
-    console.log('Navigating to signup screen');
-    setCurrentScreen('signup');
-  };
 
   const handleSignupSuccess = (email: string) => {
     console.log('Signup success for:', email);
@@ -37,24 +26,17 @@ export default function App() {
     // Will navigate to username creation screen next
   };
 
-  const handleBackToSignup = () => {
-    setCurrentScreen('signup');
+  const handleBackToAuth = () => {
+    setCurrentScreen('auth');
     setUserEmail('');
   };
 
   const renderCurrentScreen = () => {
     switch (currentScreen) {
-      case 'signup':
+      case 'auth':
         return (
-          <SignupScreen
-            onLoginPress={handleLoginPress}
+          <AuthContainer
             onSignupSuccess={handleSignupSuccess}
-          />
-        );
-      case 'login':
-        return (
-          <LoginScreen
-            onSignupPress={handleSignupPress}
             onLoginSuccess={handleLoginSuccess}
           />
         );
@@ -63,7 +45,7 @@ export default function App() {
           <VerificationScreen
             email={userEmail}
             onVerificationComplete={handleVerificationComplete}
-            onBackToSignup={handleBackToSignup}
+            onBackToSignup={handleBackToAuth}
           />
         );
       default:
