@@ -18,13 +18,13 @@
 - [x] Set up Storage bucket for images
 - **Deliverable**: Working Supabase backend with auth ✅
 
-### Task 3: Basic Auth Flow 🔄 IN PROGRESS
+### Task 3: Basic Auth Flow ✅ COMPLETED
 - [x] Email/password signup screen
 - [x] Email verification handling
-- [ ] Username creation screen
-- [ ] Login screen
-- [ ] Auth state management
-- **Deliverable**: User can create account and log in
+- [x] Username creation screen
+- [x] Login screen
+- [x] Auth state management
+- **Deliverable**: User can create account and log in ✅
 
 ## Core Features (Week 1, Days 3-7)
 

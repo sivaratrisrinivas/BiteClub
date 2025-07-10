@@ -3,8 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import AuthContainer from './components/auth/AuthContainer';
 import VerificationScreen from './components/auth/VerificationScreen';
+import UsernameCreationScreen from './components/auth/UsernameCreationScreen';
+import MainAppScreen from './components/MainAppScreen';
 
-type AppScreen = 'auth' | 'verification';
+type AppScreen = 'auth' | 'verification' | 'username' | 'main';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('auth');
@@ -17,13 +19,24 @@ export default function App() {
   };
 
   const handleLoginSuccess = () => {
-    console.log('Login successful! Will implement main app next');
-    // Will navigate to main app next
+    console.log('Login successful! Navigating to main app');
+    setCurrentScreen('main');
   };
 
   const handleVerificationComplete = () => {
-    console.log('Verification complete! Will implement username creation next');
-    // Will navigate to username creation screen next
+    console.log('Verification complete! Navigating to username creation');
+    setCurrentScreen('username');
+  };
+
+  const handleUsernameCreated = () => {
+    console.log('Username created! Navigating to main app');
+    setCurrentScreen('main');
+  };
+
+  const handleSignOut = () => {
+    console.log('User signed out, returning to auth');
+    setCurrentScreen('auth');
+    setUserEmail('');
   };
 
   const handleBackToAuth = () => {
@@ -46,6 +59,19 @@ export default function App() {
             email={userEmail}
             onVerificationComplete={handleVerificationComplete}
             onBackToSignup={handleBackToAuth}
+          />
+        );
+      case 'username':
+        return (
+          <UsernameCreationScreen
+            onUsernameCreated={handleUsernameCreated}
+            onBackToAuth={handleBackToAuth}
+          />
+        );
+      case 'main':
+        return (
+          <MainAppScreen
+            onSignOut={handleSignOut}
           />
         );
       default:
