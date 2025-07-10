@@ -18,7 +18,7 @@
 - [x] Set up Storage bucket for images
 - **Deliverable**: Working Supabase backend with auth ✅
 
-### Task 3: Basic Auth Flow
+### Task 3: Basic Auth Flow 🔄 IN PROGRESS
 - [ ] Email/password signup screen
 - [ ] Email verification handling
 - [ ] Username creation screen
