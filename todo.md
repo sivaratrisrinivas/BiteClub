@@ -20,7 +20,7 @@
 
 ### Task 3: Basic Auth Flow 🔄 IN PROGRESS
 - [x] Email/password signup screen
-- [ ] Email verification handling
+- [x] Email verification handling
 - [ ] Username creation screen
 - [ ] Login screen
 - [ ] Auth state management
