@@ -19,7 +19,7 @@
 - **Deliverable**: Working Supabase backend with auth ✅
 
 ### Task 3: Basic Auth Flow 🔄 IN PROGRESS
-- [ ] Email/password signup screen
+- [x] Email/password signup screen
 - [ ] Email verification handling
 - [ ] Username creation screen
 - [ ] Login screen
