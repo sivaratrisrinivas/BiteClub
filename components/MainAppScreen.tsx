@@ -10,9 +10,10 @@ import { supabase } from '../lib/supabase';
 
 interface MainAppScreenProps {
     onSignOut: () => void;
+    onTakePhoto: () => void;
 }
 
-export default function MainAppScreen({ onSignOut }: MainAppScreenProps) {
+export default function MainAppScreen({ onSignOut, onTakePhoto }: MainAppScreenProps) {
     const handleSignOut = async () => {
         try {
             Alert.alert(
@@ -100,11 +101,11 @@ export default function MainAppScreen({ onSignOut }: MainAppScreenProps) {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.actionButton, styles.comingSoonButton]}
-                        disabled={true}
+                        style={styles.actionButton}
+                        onPress={onTakePhoto}
                     >
-                        <Text style={[styles.actionButtonText, styles.comingSoonText]}>
-                            📸 Take Food Photo (Coming Soon)
+                        <Text style={styles.actionButtonText}>
+                            📸 Take Food Photo
                         </Text>
                     </TouchableOpacity>
 

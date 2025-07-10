@@ -32,7 +32,18 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow BiteClub to access your camera",
+          "microphonePermission": "Allow BiteClub to access your microphone",
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
   }
 }
