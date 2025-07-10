@@ -60,8 +60,11 @@ Think of it like a fitness tracker, but for food - and way more social and fun.
 ## Technical Stack
 
 **Frontend**: React Native with Expo (works on iPhone and Android)
+
 **Backend**: Supabase (database, authentication, file storage)
+
 **AI**: OpenAI GPT-4 Vision for food analysis
+
 **Notifications**: Expo Push Notifications
 
 ## Current Status
