@@ -12,15 +12,14 @@ import {
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
-interface SignupScreenProps {
-    onLoginPress: () => void;
-    onSignupSuccess: (email: string) => void;
+interface LoginScreenProps {
+    onSignupPress: () => void;
+    onLoginSuccess: () => void;
 }
 
-export default function SignupScreen({ onLoginPress, onSignupSuccess }: SignupScreenProps) {
+export default function LoginScreen({ onSignupPress, onLoginSuccess }: LoginScreenProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const validateForm = () => {
@@ -39,63 +38,52 @@ export default function SignupScreen({ onLoginPress, onSignupSuccess }: SignupSc
             return false;
         }
 
-        if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
-            return false;
-        }
-
         return true;
     };
 
-    const handleSignup = async () => {
-        console.log('Signup button pressed!');
-        console.log('Form values:', { email, password, confirmPassword });
+    const handleLogin = async () => {
+        console.log('Login button pressed!');
+        console.log('Form values:', { email, password });
 
         if (!validateForm()) {
-            console.log('Form validation failed');
+            console.log('Login form validation failed');
             return;
         }
 
-        console.log('Form validation passed, starting signup...');
+        console.log('Login form validation passed, starting login...');
         setLoading(true);
 
         try {
-            console.log('Calling Supabase signup...');
-            const { data, error } = await supabase.auth.signUp({
+            console.log('Calling Supabase signIn...');
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: email.trim().toLowerCase(),
                 password: password,
-                options: {
-                    emailRedirectTo: undefined, // We'll handle verification in the app
-                },
             });
 
-            console.log('Supabase response:', { data, error });
+            console.log('Supabase login response:', { data, error });
 
             if (error) {
-                console.error('Supabase signup error:', error);
-                Alert.alert('Signup Error', error.message);
+                console.error('Supabase login error:', error);
+                Alert.alert('Login Error', error.message);
                 return;
             }
 
             if (data.user) {
-                console.log('Signup successful! User:', data.user);
-                // Success! User needs to verify email
-                Alert.alert(
-                    'Check Your Email!',
-                    `We've sent a verification email to ${email}. Please check your inbox and click the verification link to activate your account.`,
-                    [
-                        {
-                            text: 'OK',
-                            onPress: () => {
-                                console.log('Navigating to verification screen...');
-                                onSignupSuccess(email);
-                            },
-                        },
-                    ]
-                );
+                console.log('Login successful! User:', data.user);
+                if (!data.user.email_confirmed_at) {
+                    Alert.alert(
+                        'Email Not Verified',
+                        'Please verify your email address before logging in. Check your inbox for the verification email.',
+                        [{ text: 'OK' }]
+                    );
+                    return;
+                }
+
+                console.log('Navigating to main app...');
+                onLoginSuccess();
             }
         } catch (error) {
-            console.error('Signup error:', error);
+            console.error('Login error:', error);
             Alert.alert('Error', 'Something went wrong. Please try again.');
         } finally {
             setLoading(false);
@@ -108,8 +96,8 @@ export default function SignupScreen({ onLoginPress, onSignupSuccess }: SignupSc
             style={styles.container}
         >
             <View style={styles.form}>
-                <Text style={styles.title}>Join BiteClub</Text>
-                <Text style={styles.subtitle}>Create your account to start scoring your meals</Text>
+                <Text style={styles.title}>Welcome Back</Text>
+                <Text style={styles.subtitle}>Sign in to your BiteClub account</Text>
 
                 <TextInput
                     style={styles.input}
@@ -124,40 +112,30 @@ export default function SignupScreen({ onLoginPress, onSignupSuccess }: SignupSc
 
                 <TextInput
                     style={styles.input}
-                    placeholder="Password (min 6 characters)"
+                    placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                    autoComplete="password-new"
-                    editable={!loading}
-                />
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Confirm password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                    autoComplete="password-new"
+                    autoComplete="password"
                     editable={!loading}
                 />
 
                 <TouchableOpacity
-                    style={[styles.signupButton, loading && styles.buttonDisabled]}
-                    onPress={handleSignup}
+                    style={[styles.loginButton, loading && styles.buttonDisabled]}
+                    onPress={handleLogin}
                     disabled={loading}
                 >
                     {loading ? (
                         <ActivityIndicator color="white" />
                     ) : (
-                        <Text style={styles.signupButtonText}>Create Account</Text>
+                        <Text style={styles.loginButtonText}>Sign In</Text>
                     )}
                 </TouchableOpacity>
 
-                <View style={styles.loginPrompt}>
-                    <Text style={styles.loginPromptText}>Already have an account? </Text>
-                    <TouchableOpacity onPress={onLoginPress} disabled={loading}>
-                        <Text style={styles.loginLink}>Sign In</Text>
+                <View style={styles.signupPrompt}>
+                    <Text style={styles.signupPromptText}>Don't have an account? </Text>
+                    <TouchableOpacity onPress={onSignupPress} disabled={loading}>
+                        <Text style={styles.signupLink}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -199,7 +177,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: '#f9f9f9',
     },
-    signupButton: {
+    loginButton: {
         backgroundColor: '#007AFF',
         borderRadius: 8,
         padding: 16,
@@ -209,21 +187,21 @@ const styles = StyleSheet.create({
     buttonDisabled: {
         opacity: 0.6,
     },
-    signupButtonText: {
+    loginButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: '600',
     },
-    loginPrompt: {
+    signupPrompt: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    loginPromptText: {
+    signupPromptText: {
         fontSize: 16,
         color: '#666',
     },
-    loginLink: {
+    signupLink: {
         fontSize: 16,
         color: '#007AFF',
         fontWeight: '600',
