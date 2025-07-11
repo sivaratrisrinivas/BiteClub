@@ -37,13 +37,13 @@
 - [x] Integration into main app navigation
 - **Deliverable**: Can take photos ✅
 
-### Task 5: Image Upload
+### Task 5: Image Upload ✅ COMPLETED
 **Depends on**: Task 2, Task 4
-- [ ] Upload captured photo to Supabase Storage
-- [ ] Generate unique filenames
-- [ ] Handle upload errors/retry
-- [ ] Loading states during upload
-- **Deliverable**: Photos saved to cloud storage
+- [x] Upload captured photo to Supabase Storage
+- [x] Generate unique filenames
+- [x] Handle upload errors/retry
+- [x] Loading states during upload
+- **Deliverable**: Photos saved to cloud storage ✅
 
 ### Task 6: Health Scoring System
 **Depends on**: Task 2, Task 5

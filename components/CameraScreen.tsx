@@ -16,9 +16,10 @@ import * as ImageManipulator from 'expo-image-manipulator';
 interface CameraScreenProps {
     onPhotoTaken: (photoUri: string) => void;
     onCancel: () => void;
+    isUploading?: boolean;
 }
 
-export default function CameraScreen({ onPhotoTaken, onCancel }: CameraScreenProps) {
+export default function CameraScreen({ onPhotoTaken, onCancel, isUploading = false }: CameraScreenProps) {
     const [facing, setFacing] = useState<'front' | 'back'>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [isCapturing, setIsCapturing] = useState(false);
@@ -176,12 +177,6 @@ export default function CameraScreen({ onPhotoTaken, onCancel }: CameraScreenPro
                     // Show preview of captured photo
                     setCapturedPhoto(finalUri);
                     setIsCapturing(false); // Reset capturing state for preview
-
-                    // Auto-navigate back after 2 seconds
-                    setTimeout(() => {
-                        console.log('Auto-navigation triggered, calling onPhotoTaken');
-                        onPhotoTaken(finalUri);
-                    }, 2000);
                 } else {
                     throw new Error('No photo URI or base64 data received');
                 }
@@ -272,24 +267,37 @@ export default function CameraScreen({ onPhotoTaken, onCancel }: CameraScreenPro
                     {/* Action buttons */}
                     <View style={styles.previewActions}>
                         <TouchableOpacity
-                            style={styles.retakeButton}
+                            style={[styles.retakeButton, isUploading && styles.buttonDisabled]}
                             onPress={retakePhoto}
                             activeOpacity={0.7}
+                            disabled={isUploading}
                         >
-                            <Text style={styles.retakeButtonText}>🔄 Retake</Text>
+                            <Text style={[styles.retakeButtonText, isUploading && styles.buttonTextDisabled]}>
+                                🔄 Retake
+                            </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={styles.usePhotoButton}
+                            style={[styles.usePhotoButton, isUploading && styles.buttonDisabled]}
                             onPress={usePhoto}
                             activeOpacity={0.7}
+                            disabled={isUploading}
                         >
-                            <Text style={styles.usePhotoButtonText}>✓ Use Photo</Text>
+                            {isUploading ? (
+                                <View style={styles.uploadingContainer}>
+                                    <ActivityIndicator color="white" size="small" />
+                                    <Text style={styles.usePhotoButtonText}>Uploading...</Text>
+                                </View>
+                            ) : (
+                                <Text style={styles.usePhotoButtonText}>✓ Use Photo</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.autoNavText}>
-                        {isCapturing ? 'Processing...' : 'Auto-returning in 2 seconds...'}
-                    </Text>
+                    {(isUploading || isCapturing) && (
+                        <Text style={styles.autoNavText}>
+                            {isUploading ? '📤 Uploading to cloud...' : 'Processing...'}
+                        </Text>
+                    )}
                 </View>
             </View>
         );
@@ -585,5 +593,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
         backgroundColor: 'rgba(0,0,0,0.7)',
         paddingVertical: 8,
+    },
+    buttonDisabled: {
+        opacity: 0.5,
+    },
+    buttonTextDisabled: {
+        opacity: 0.7,
+    },
+    uploadingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
     },
 }); 

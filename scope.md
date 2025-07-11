@@ -154,7 +154,7 @@ supabase
 
 ### Week 2: Viral mechanics
 - Challenge system
-- Push notifications
+- Push notifications  
 - Real-time updates
 
 ### Week 3: Ship it

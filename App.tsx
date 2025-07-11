@@ -6,12 +6,14 @@ import VerificationScreen from './components/auth/VerificationScreen';
 import UsernameCreationScreen from './components/auth/UsernameCreationScreen';
 import MainAppScreen from './components/MainAppScreen';
 import CameraScreen from './components/CameraScreen';
+import { uploadImageAndCreatePost } from './lib/imageUpload';
 
 type AppScreen = 'auth' | 'verification' | 'username' | 'main' | 'camera';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('auth');
   const [userEmail, setUserEmail] = useState<string>('');
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleSignupSuccess = (email: string) => {
     console.log('Signup success for:', email);
@@ -45,24 +47,82 @@ export default function App() {
     setCurrentScreen('camera');
   };
 
-  const handlePhotoTaken = (photoUri: string) => {
+  const handlePhotoTaken = async (photoUri: string) => {
     console.log('=== PHOTO TAKEN CALLBACK TRIGGERED ===');
     console.log('Photo taken:', photoUri);
-    console.log('Current screen before alert:', currentScreen);
-    // For now, just show success and return to main screen
-    Alert.alert(
-      'Photo Captured! 📸',
-      'Your food photo has been captured successfully! We\'ll add scoring in the next task.',
-      [
-        {
-          text: 'Continue',
-          onPress: () => {
-            console.log('Alert dismissed, navigating to main');
-            setCurrentScreen('main');
+    console.log('Current screen before upload:', currentScreen);
+
+    setIsUploading(true);
+
+    try {
+      console.log('Starting image upload...');
+      const result = await uploadImageAndCreatePost(photoUri);
+
+      if (result.success) {
+        console.log('Upload successful:', result.data);
+        Alert.alert(
+          'Photo Uploaded! 🎉',
+          'Your food photo has been uploaded successfully and saved to your profile!',
+          [
+            {
+              text: 'Continue',
+              onPress: () => {
+                console.log('Upload success, navigating to main');
+                setCurrentScreen('main');
+              },
+            },
+          ]
+        );
+      } else {
+        console.error('Upload failed:', result.error);
+        Alert.alert(
+          'Upload Failed',
+          `Sorry, we couldn't upload your photo: ${result.error}`,
+          [
+            {
+              text: 'Try Again',
+              onPress: () => {
+                console.log('User chose to try again, staying on camera');
+                // Stay on camera screen to try again
+              },
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => {
+                console.log('User cancelled upload, returning to main');
+                setCurrentScreen('main');
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('Unexpected upload error:', error);
+      Alert.alert(
+        'Upload Error',
+        'An unexpected error occurred while uploading your photo. Please try again.',
+        [
+          {
+            text: 'Try Again',
+            onPress: () => {
+              console.log('User chose to try again after error');
+              // Stay on camera screen to try again
+            },
           },
-        },
-      ]
-    );
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => {
+              console.log('User cancelled after error, returning to main');
+              setCurrentScreen('main');
+            },
+          },
+        ]
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCameraCancel = () => {
@@ -114,6 +174,7 @@ export default function App() {
           <CameraScreen
             onPhotoTaken={handlePhotoTaken}
             onCancel={handleCameraCancel}
+            isUploading={isUploading}
           />
         );
       default:
