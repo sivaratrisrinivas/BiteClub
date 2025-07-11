@@ -1,10 +1,14 @@
 import { supabase } from './supabase';
+import { scoreFood } from './healthScoring';
 
 interface UploadResult {
   success: boolean;
   data?: {
     imageUrl: string;
     imagePath: string;
+    postId?: string;
+    healthScore?: number;
+    reasoning?: string;
   };
   error?: string;
 }
@@ -161,7 +165,8 @@ export async function createPostRecord(imageUrl: string, imagePath: string): Pro
       success: true,
       data: {
         imageUrl,
-        imagePath
+        imagePath,
+        postId: data.id
       }
     };
 
@@ -175,9 +180,12 @@ export async function createPostRecord(imageUrl: string, imagePath: string): Pro
 }
 
 /**
- * Complete upload flow: upload image + create post record
+ * Complete upload flow: upload image + create post record + trigger AI scoring
  */
-export async function uploadImageAndCreatePost(imageUri: string): Promise<UploadResult> {
+export async function uploadImageAndCreatePost(
+  imageUri: string, 
+  onScoringComplete?: (score: number, reasoning: string) => void
+): Promise<UploadResult> {
   console.log('Starting complete upload flow...');
 
   // Step 1: Upload image to storage
@@ -198,7 +206,43 @@ export async function uploadImageAndCreatePost(imageUri: string): Promise<Upload
   if (!postResult.success) {
     // TODO: Consider cleaning up the uploaded image if post creation fails
     console.warn('Post creation failed, but image was uploaded to:', uploadResult.data.imagePath);
+    return postResult;
   }
 
-  return postResult;
-} 
+  console.log('Post created successfully, triggering AI scoring...');
+
+  // Step 3: Trigger AI scoring (non-blocking - runs in background)
+  if (postResult.data && postResult.data.postId) {
+    const postId = postResult.data.postId;
+    console.log(`🚀 [IMAGE-UPLOAD] Starting AI scoring for post ${postId}`);
+    
+    // Trigger scoring asynchronously - don't wait for it to complete
+    scoreFood(uploadResult.data.imageUrl, postId)
+      .then((scoringResult) => {
+        if (scoringResult.success) {
+          console.log(`✅ [IMAGE-UPLOAD] AI scoring completed: ${scoringResult.score}/10`);
+          // Call the callback to update UI
+          if (onScoringComplete && scoringResult.score && scoringResult.reasoning) {
+            onScoringComplete(scoringResult.score, scoringResult.reasoning);
+          }
+        } else {
+          console.error(`❌ [IMAGE-UPLOAD] AI scoring failed: ${scoringResult.error}`);
+        }
+      })
+      .catch((error) => {
+        console.error(`❌ [IMAGE-UPLOAD] AI scoring error:`, error);
+      });
+  } else {
+    console.warn(`⚠️ [IMAGE-UPLOAD] No postId available for AI scoring`);
+  }
+
+  // Return immediately after upload and post creation (don't wait for scoring)
+  return {
+    success: true,
+    data: {
+      imageUrl: uploadResult.data.imageUrl,
+      imagePath: uploadResult.data.imagePath,
+      postId: postResult.data?.postId
+    }
+  };
+}

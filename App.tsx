@@ -10,10 +10,17 @@ import { uploadImageAndCreatePost } from './lib/imageUpload';
 
 type AppScreen = 'auth' | 'verification' | 'username' | 'main' | 'camera';
 
+interface LatestScore {
+  score: number;
+  reasoning: string;
+  timestamp: Date;
+}
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('auth');
   const [userEmail, setUserEmail] = useState<string>('');
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [latestScore, setLatestScore] = useState<LatestScore | null>(null);
 
   const handleSignupSuccess = (email: string) => {
     console.log('Signup success for:', email);
@@ -51,74 +58,53 @@ export default function App() {
     console.log('=== PHOTO TAKEN CALLBACK TRIGGERED ===');
     console.log('Photo taken:', photoUri);
     console.log('Current screen before upload:', currentScreen);
+    console.log('Is already uploading:', isUploading);
+
+    // Prevent duplicate uploads
+    if (isUploading) {
+      console.log('Upload already in progress, ignoring duplicate call');
+      return;
+    }
 
     setIsUploading(true);
 
+    // Navigate to main screen immediately
+    console.log('Navigating to main screen immediately');
+    setCurrentScreen('main');
+
     try {
-      console.log('Starting image upload...');
-      const result = await uploadImageAndCreatePost(photoUri);
+      console.log('Starting image upload in background...');
+      const result = await uploadImageAndCreatePost(photoUri, (score, reasoning) => {
+        // Update the latest score when AI analysis completes
+        setLatestScore({
+          score,
+          reasoning,
+          timestamp: new Date()
+        });
+      });
 
       if (result.success) {
         console.log('Upload successful:', result.data);
+        // Optional: Show a brief success notification without blocking UI
         Alert.alert(
           'Photo Uploaded! 🎉',
-          'Your food photo has been uploaded successfully and saved to your profile!',
-          [
-            {
-              text: 'Continue',
-              onPress: () => {
-                console.log('Upload success, navigating to main');
-                setCurrentScreen('main');
-              },
-            },
-          ]
+          'Your food photo has been uploaded and is being analyzed!',
+          [{ text: 'OK' }]
         );
       } else {
         console.error('Upload failed:', result.error);
         Alert.alert(
           'Upload Failed',
           `Sorry, we couldn't upload your photo: ${result.error}`,
-          [
-            {
-              text: 'Try Again',
-              onPress: () => {
-                console.log('User chose to try again, staying on camera');
-                // Stay on camera screen to try again
-              },
-            },
-            {
-              text: 'Cancel',
-              style: 'cancel',
-              onPress: () => {
-                console.log('User cancelled upload, returning to main');
-                setCurrentScreen('main');
-              },
-            },
-          ]
+          [{ text: 'OK' }]
         );
       }
     } catch (error) {
       console.error('Unexpected upload error:', error);
       Alert.alert(
         'Upload Error',
-        'An unexpected error occurred while uploading your photo. Please try again.',
-        [
-          {
-            text: 'Try Again',
-            onPress: () => {
-              console.log('User chose to try again after error');
-              // Stay on camera screen to try again
-            },
-          },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-            onPress: () => {
-              console.log('User cancelled after error, returning to main');
-              setCurrentScreen('main');
-            },
-          },
-        ]
+        'An unexpected error occurred while uploading your photo.',
+        [{ text: 'OK' }]
       );
     } finally {
       setIsUploading(false);
@@ -167,6 +153,7 @@ export default function App() {
           <MainAppScreen
             onSignOut={handleSignOut}
             onTakePhoto={handleTakePhoto}
+            latestScore={latestScore}
           />
         );
       case 'camera':
