@@ -38,10 +38,10 @@ Think of it like a fitness tracker, but for food - and way more social and fun.
 6. **Send challenges** when you're losing to motivate friends
 
 ### Behind the Scenes
-- **AI Vision**: Advanced AI analyzes your food photos and gives health scores based on nutrition, portion size, and cooking methods
-- **Real-time Updates**: See when friends post new meals instantly
-- **Smart Challenges**: App suggests challenges when you're falling behind
-- **Push Notifications**: Get notified about challenges, friend activity, and daily results
+- **AI Vision**: Google Gemini analyzes your food photos and gives health scores (1-10) with detailed reasoning based on nutrition, portion size, and cooking methods
+- **Real-time Updates**: See when friends post new meals instantly (coming soon)
+- **Smart Challenges**: App suggests challenges when you're falling behind (coming soon)
+- **Push Notifications**: Get notified about challenges, friend activity, and daily results (coming soon)
 
 ## What Makes It Viral?
 
@@ -63,20 +63,28 @@ Think of it like a fitness tracker, but for food - and way more social and fun.
 
 **Backend**: Supabase (database, authentication, file storage)
 
-**AI**: OpenAI GPT-4 Vision for food analysis
+**AI**: Google Gemini Vision for food analysis
 
 **Notifications**: Expo Push Notifications
 
 ## Current Status
 
-We're building this in phases:
+### ✅ What's Working Now
+- **Complete User Authentication**: Sign up, email verification, login, username creation
+- **Photo Capture**: Full camera integration with image compression and permissions
+- **AI Food Analysis**: Take a photo and get instant health scores (1-10) with detailed reasoning from Google Gemini
+- **Cloud Storage**: Photos automatically uploaded to Supabase with retry logic
+- **Real-time UI**: Score cards appear immediately after AI analysis completes
+- **Database Integration**: User posts linked to profiles with health scores stored
 
+### 🚧 Development Phases
 - ✅ **Foundation**: Project setup, database, authentication
 - ✅ **Auth Flow**: Sign up, login, email verification, usernames  
 - ✅ **Camera**: Photo capture with compression and permissions
-- 🚧 **Image Upload**: Save photos to cloud storage
-- 📋 **AI Scoring**: Get health scores from food photos
-- 📋 **Social Features**: Friends, rankings, challenges
+- ✅ **Image Upload**: Save photos to cloud storage with retry logic
+- ✅ **AI Scoring**: Get health scores from food photos using Gemini AI
+- ✅ **Post Creation**: Complete photo → upload → score → UI display flow
+- 🚧 **Social Features**: Friends, rankings, challenges (next phase)
 - 📋 **Notifications**: Push notifications for engagement
 - 📋 **Polish**: UI improvements and app store launch
 
